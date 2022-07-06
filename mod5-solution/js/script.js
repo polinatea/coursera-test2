@@ -1,8 +1,8 @@
 $(function () { // Same as document.addEventListener("DOMContentLoaded"...
 
   // Same as document.querySelector("#navbarToggle").addEventListener("blur",...
-  $("#navbarToggle").blur(function (event) {
-    var screenWidth = window.innerWidth;
+  $("#navbarToggle").blur(function (event) { // blur -  момент потери фокуса (клик куда-то еще или tab)
+    var screenWidth = window.innerWidth; // берем только размер окна, а не весь экран
     if (screenWidth < 768) {
       $("#collapsable-nav").collapse('hide');
     }
@@ -32,7 +32,7 @@ var insertHtml = function (selector, html) {
 // Show loading icon inside element identified by 'selector'.
 var showLoading = function (selector) {
   var html = "<div class='text-center'>";
-  html += "<img src='images/ajax-loader.gif'></div>";
+  html += "<img src='images/ajax-loader3.gif'></div>";
   insertHtml(selector, html);
 };
 
@@ -44,6 +44,13 @@ var insertProperty = function (string, propName, propValue) {
     .replace(new RegExp(propToReplace, "g"), propValue);
   return string;
 };
+
+//string = <jnfjzsdfns {{potato}}kjfjf>
+//propName = potato
+//propToReplace = {{potato}}
+//propValue = {{Kartoshka}}
+//returning ->  <jnfjzsdfns {{Kartoshka}}kjfjf>
+
 
 // Remove the class 'active' from home and switch to Menu button
 var switchMenuToActive = function () {
@@ -83,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 showLoading("#main-content");
 $ajaxUtils.sendGetRequest(
   allCategoriesUrl,
-  [...], // ***** <---- TODO: STEP 1: Substitute [...] ******
+buildAndShowHomeHTML, // ***** <---- TODO: STEP 1: Substitute [...] ******
   true); // Explicitly setting the flag to get JSON from server processed into an object literal
 });
 // *** finish **
@@ -101,8 +108,8 @@ function buildAndShowHomeHTML (categories) {
       // TODO: STEP 2: Here, call chooseRandomCategory, passing it retrieved 'categories'
       // Pay attention to what type of data that function returns vs what the chosenCategoryShortName
       // variable's name implies it expects.
-      // var chosenCategoryShortName = ....
-
+      var chosenCategoryShortName = chooseRandomCategory(categories);
+      console.log(chosenCategoryShortName);
 
       // TODO: STEP 3: Substitute {{randomCategoryShortName}} in the home html snippet with the
       // chosen category from STEP 2. Use existing insertProperty function for that purpose.
@@ -114,14 +121,39 @@ function buildAndShowHomeHTML (categories) {
       // $dc.loadMenuItems('L')
       // Hint: you need to surround the chosen category short name with something before inserting
       // it into the home html snippet.
-      //
-      // var homeHtmlToInsertIntoMainPage = ....
+      // console.log(homeHtml);
+      
+       
+      //insertProperty(string, propName, propValue)
+      //string = <something {{potato}}something>
+      //propName = potato
+      //propToChange = "{{" + propName + "}}" = {{potato}}
+      //propValue = {{kartoshka}}
+      //return -> <something {{kartoshka}}something>
 
+      //loadMenuItems('SP') #######
+      //loadMenuItems({{randomCategoryShortName}})
+      //insertProperty(string, propName, propValue)
 
-      // TODO: STEP 4: Insert the produced HTML in STEP 3 into the main page
-      // Use the existing insertHtml function for that purpose. Look through this code for an example
-      // of how to do that.
-      // ....
+      //randomCategoryShortName -> {{randomCategoryShortName}}
+
+      //string = someHtmlGarbage <a href "s" onclick .afklnfjsdfloadMenuItems('SP');">  moreHtmlGarbage
+      
+      var finalShortName = "'" + chosenCategoryShortName.short_name + "'";
+
+      var homeHtmlToInsertIntoMainPage = homeHtml;
+      console.log(homeHtml);
+      homeHtmlToInsertIntoMainPage = insertProperty(homeHtmlToInsertIntoMainPage, "randomCategoryShortName", finalShortName);
+
+      console.log("huy" + homeHtmlToInsertIntoMainPage);
+      //homeHtmlToInsertIntoMainPage = insertProperty(homeHtmlToInsertIntoMainPage,homeHtmlToInsertIntoMainPage.randomCategoryShortName,chosenCategoryShortName.short_name);
+
+      // // TODO: STEP 4: Insert the produced HTML in STEP 3 into the main page
+      // // Use the existing insertHtml function for that purpose. Look through this code for an example
+      // // of how to do that.
+      // // ....
+    
+      insertHtml("#main-content",homeHtmlToInsertIntoMainPage);
 
     },
     false); // False here because we are getting just regular HTML from the server, so no need to process JSON.
